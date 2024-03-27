@@ -5,3 +5,10 @@ $(document).ready(function () {
     });
   });
 });
+$(document).ready(function () {
+  $(".welcome-message").fadeIn(5000, function () {
+    setTimeout(() => {
+      $(this).fadeOut(5000);
+    }, 2000);
+  });
+});
