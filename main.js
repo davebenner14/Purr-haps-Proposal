@@ -3,8 +3,7 @@ $(document).ready(function () {
     $(this).fadeOut(1000, function () {
       $(".curtain").fadeOut(2000, function () {
         setTimeout(function () {
-          createCanvasAndLightning();
-
+          // Previously intended for initial lightning effect setup
           setTimeout(function () {
             $("#weatherAnimation").empty();
           }, 7000);
@@ -27,28 +26,50 @@ $(document).ready(function () {
 function displayMessagesSequentially(messages, index) {
   if (index >= messages.length) return;
 
-  const messageElement = $("<div></div>")
-    .text(messages[index])
-    .css({
-      position: "fixed",
-      top: "50%",
-      left: "50%",
-      transform: "translate(-50%, -50%)",
-      color: "white",
-      "font-size": "24px",
-      "text-align": "center",
-      display: "none"
-    })
-    .appendTo("body");
-
-  messageElement.fadeIn(2000, function () {
-    setTimeout(function () {
-      messageElement.fadeOut(2000, function () {
-        messageElement.remove();
-        displayMessagesSequentially(messages, index + 1);
+  const showMessage = () => {
+    console.log(`${messages[index]} text begins`); // Log when text begins
+    const messageElement = $("<div></div>")
+      .text(messages[index])
+      .css({
+        position: "fixed",
+        top: "50%",
+        left: "50%",
+        transform: "translate(-50%, -50%)",
+        color: "white",
+        "font-size": "24px",
+        "text-align": "center",
+        display: "none"
+      })
+      .appendTo("body")
+      .fadeIn(2000, () => {
+        setTimeout(() => {
+          messageElement.fadeOut(2000, () => {
+            console.log(`${messages[index]} text ends`); // Log when text ends
+            messageElement.remove();
+            if (index + 1 < messages.length) {
+              displayMessagesSequentially(messages, index + 1);
+            }
+          });
+        }, 5000); // How long to keep the message visible
       });
-    }, 5000);
-  });
+  };
+
+  if (messages[index] === "...A world of mystery...") {
+    console.log("Lightning and rain animation begins"); // Log when animation begins
+    setTimeout(() => {
+      $("#canvas1, #canvas2, #canvas3").css("display", "block");
+    }, 2000); // Corrected to wait 2 seconds before showing the effect
+
+    showMessage();
+
+    // Hide the effect 2 seconds after the message
+    setTimeout(() => {
+      $("#canvas1, #canvas2, #canvas3").css("display", "none");
+      console.log("Lightning and rain animation ends"); // Log when animation ends
+    }, 9000); // Adjust the timing as needed
+  } else {
+    showMessage();
+  }
 }
 
 $(document).ready(function () {
