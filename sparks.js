@@ -4,7 +4,7 @@ const config = {
     "#eddc01",
     "#f2b125",
     "#fd9407",
-    "#33FFF1",
+    "#33FFB4",
     "#ff7308",
     "#eb5508",
     "#33CCFF",

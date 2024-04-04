@@ -9,10 +9,6 @@ var rainthroughnum = 500;
 var speedRainTrough = 25;
 var RainTrough = [];
 
-var isAnimationActive = false; // Controls the animation loop
-var isLightningActive = false; // Controls the creation of lightning
-
-
 var rainnum = 500;
 var rain = [];
 
@@ -20,16 +16,33 @@ var lightning = [];
 var lightTimeCurrent = 0;
 var lightTimeTotal = 0;
 
-var loopLogCounter = 0;
-
 var w = (canvas1.width = canvas2.width = canvas3.width = window.innerWidth);
 var h = (canvas1.height = canvas2.height = canvas3.height = window.innerHeight);
 window.addEventListener("resize", function () {
-    console.log("Window resized. Updating canvas sizes...");
-    w = canvas1.width = canvas2.width = canvas3.width = window.innerWidth;
-    h = canvas1.height = canvas2.height = canvas3.height = window.innerHeight;
-  });
-  
+  w = canvas1.width = canvas2.width = canvas3.width = window.innerWidth;
+  h = canvas1.height = canvas2.height = canvas3.height = window.innerHeight;
+});
+
+var animationIsActive = false;
+
+function startLightningAnimation() {
+  if (!animationIsActive) {
+    animationIsActive = true;
+    animloop();
+  }
+}
+
+function stopLightningAnimation() {
+  animationIsActive = false;
+}
+
+function animloop() {
+  if (!animationIsActive) return;
+  animateRainTrough();
+  animateRain();
+  animateLightning();
+  requestAnimationFrame(animloop);
+}
 
 function random(min, max) {
   return Math.random() * (max - min + 1) + min;
@@ -64,8 +77,6 @@ function createRainTrough() {
 }
 
 function createRain() {
-    console.log("Creating lightning...");
-
   for (var i = 0; i < rainnum; i++) {
     rain[i] = {
       x: Math.random() * w,
@@ -97,8 +108,7 @@ function createLightning() {
       pathLimit: random(40, 55)
     };
     lightning.push(single);
-    console.log("Lightning added: ", single);
-      }
+  }
 }
 
 function drawRainTrough(i) {
@@ -131,8 +141,6 @@ function drawRain(i) {
 }
 
 function drawLightning() {
-    console.log(`Drawing lightning, count: ${lightning.length}`);
-
   for (var i = 0; i < lightning.length; i++) {
     var light = lightning[i];
 
@@ -144,8 +152,6 @@ function drawLightning() {
     });
 
     if (light.path.length > light.pathLimit) {
-        console.log(`Lightning path completed and removed. Length was: ${light.path.length}`);
-
       lightning.splice(i, 1);
     }
 
@@ -199,45 +205,27 @@ function animateRain() {
 }
 
 function animateLightning() {
-    clearCanvas3();
-    if (!isLightningActive) {
-      // Optionally log when skipping lightning creation for debug purposes
-      return; // Skip creating new lightning if it shouldn't be active
-    }
-    
-    lightTimeCurrent++;
-    if (lightTimeCurrent >= lightTimeTotal) {
-      createLightning();
-      lightTimeCurrent = 0;
-      lightTimeTotal = 200; // Adjust this value based on desired frequency
-    }
-    drawLightning();
+  clearCanvas3();
+  lightTimeCurrent++;
+  if (lightTimeCurrent >= lightTimeTotal) {
+    createLightning();
+    lightTimeCurrent = 0;
+    lightTimeTotal = 200; //rand(100, 200)
   }
-  
+  drawLightning();
+}
 
 function init() {
-    console.log("Initializing rain and lightning...");
-    createRainTrough();
-    createRain();
-    window.addEventListener("resize", createRainTrough);
-  }
-  
+  createRainTrough();
+  createRain();
+  window.addEventListener("resize", createRainTrough);
+}
 init();
 
 function animloop() {
-    if (!isAnimationActive) {
-      console.log("Animation loop paused.");
-      return; // Exit the function if animation shouldn't be active
-    }
-    
-    animateRainTrough();
-    animateRain();
-    if (isLightningActive) {
-      animateLightning();
-    }
-    
-    console.log("Animation loop running...");
-    requestAnimationFrame(animloop);
-  }
-  
-animloop();
+  animateRainTrough();
+  animateRain();
+  animateLightning();
+  requestAnimationFrame(animloop);
+}
+// animloop();

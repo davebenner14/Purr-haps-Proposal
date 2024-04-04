@@ -53,31 +53,38 @@
       </div>
     </div>
     <!-- End fire glows -->
-    <div id="weatherAnimation"></div>
-    <div class="lightning-effect">
-      <canvas id="canvas1"></canvas>
-      <canvas id="canvas2"></canvas>
-      <canvas id="canvas3"></canvas>
-    </div>
 
     <!-- Red curtain -->
     <main>
-      <div class="curtain">
+      <!-- <div class="curtain"> -->
         <!-- The red curtain content -->
-        <div class="buttons">
-          <a href="javascript:void(0);" id="enterButton" class="btn"
-            >Click to Enter</a
-          >
-          <audio
-            id="entryMusic"
-            src="Assets/Opening.mp3"
-            preload="auto"
-          ></audio>
-        </div>
-      </div>
-    </main>
+        
+   <div class="buttons">
+          <a href="javascript:void(0);" id="enterButton" class="btn">Click to Enter</a>
+          <audio id="entryMusic" src="Assets/Opening.mp3" preload="auto"></audio>
+</div>
 
-    <!-- Include jQuery with CDN -->
+<div id="welcomeSection" class="section" style="display: none">
+  <div>Welcome Content</div>
+  <button class="nextButton">Next</button>
+</div>
+
+<!-- Mystery Section -->
+<div id="mysterySection" class="section" style="display: none">
+  <div id="lightningAnimationContainer">
+    <body class="thunder">
+      <canvas id="canvas1"></canvas>
+      <canvas id="canvas2"></canvas>
+      <canvas id="canvas3"></canvas>
+    </body>  </div>
+  <div>Mystery Content</div>
+  <button class="nextButton">Next</button>
+</div>
+
+<div id="wonderSection" class="section" style="display: none">
+  <div>Wonder Content</div>
+</div>
+
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script src="lightning.js"></script>
     <script src="main.js"></script>
