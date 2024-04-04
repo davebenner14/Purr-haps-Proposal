@@ -1,210 +1,418 @@
-var canvas1 = document.getElementById("canvas1");
-var canvas2 = document.getElementById("canvas2");
-var canvas3 = document.getElementById("canvas3");
-var ctx1 = canvas1.getContext("2d");
-var ctx2 = canvas2.getContext("2d");
-var ctx3 = canvas3.getContext("2d");
+// Best viewed in Chrome
+// Click anywhere to make your own lightning!
 
-var rainthroughnum = 500;
-var speedRainTrough = 25;
-var RainTrough = [];
+//=============================
+// Consts
+//=============================
+const HAS_FLASH = true;
+const TIME_BETWEEN_LIGHTNING = 1000;
 
-var rainnum = 500;
-var rain = [];
+const MAX_POINTS = 120;
+const MAX_X_DISTANCE = 9; // 10 - 30
+const MAX_Y_DISTANCE = 8; // 10 - 30
+const MAX_WIDTH = 3; // 1 - 10
 
-var lightning = [];
-var lightTimeCurrent = 0;
-var lightTimeTotal = 0;
+const FADE_INCREMENT = 0.013; // 0 - 0.02
 
-var w = (canvas1.width = canvas2.width = canvas3.width = window.innerWidth);
-var h = (canvas1.height = canvas2.height = canvas3.height = window.innerHeight);
-window.addEventListener("resize", function () {
-  w = canvas1.width = canvas2.width = canvas3.width = window.innerWidth;
-  h = canvas1.height = canvas2.height = canvas3.height = window.innerHeight;
-});
+const LIGHTNING_CHANCE = 0.03;
+const SHEET_CHANCE = 0.2;
+const BRANCH_CHANCE = 0.01;
+const FLICKER_CHANCE = 0.023;
+const BRANCH_BRANCH_CHANCE = 0.9;
 
-function random(min, max) {
-  return Math.random() * (max - min + 1) + min;
-}
+//=============================
+// Helpers
+//=============================
+const getTimestamp = () => {
+  return new Date().getTime();
+};
 
-function clearcanvas1() {
-  ctx1.clearRect(0, 0, w, h);
-}
+const random = (max = 1, unsigned = false) => {
+  return unsigned ? (Math.random() - 0.5) * 2 * max : Math.random() * max;
+};
 
-function clearcanvas2() {
-  ctx2.clearRect(0, 0, canvas2.width, canvas2.height);
-}
+//=============================
+// Main
+//=============================
+const lightningCanvas = document.getElementById("lightning");
+const ctx = lightningCanvas.getContext("2d");
+const cloudLightningCanvas = document.getElementById("cloudlightning");
+const clCtx = cloudLightningCanvas.getContext("2d");
+const lightningSheetCanvas = document.getElementById("lightningSheet");
+const lsCtx = lightningSheetCanvas.getContext("2d");
 
-function clearCanvas3() {
-  ctx3.globalCompositeOperation = "destination-out";
-  ctx3.fillStyle = "rgba(0,0,0," + random(1, 30) / 100 + ")";
-  ctx3.fillRect(0, 0, w, h);
-  ctx3.globalCompositeOperation = "source-over";
-}
+let HAS_CLOUD_EFFECTS = true;
 
-function createRainTrough() {
-  for (var i = 0; i < rainthroughnum; i++) {
-    RainTrough[i] = {
-      x: random(0, w),
-      y: random(0, h),
-      length: Math.floor(random(1, 830)),
-      opacity: Math.random() * 0.2,
-      xs: random(-2, 2),
-      ys: random(10, 20)
-    };
-  }
-}
+let lightning = [];
+let cloudLightning = [];
+let flashes = [];
+let lightningSheets = [];
 
-function createRain() {
-  for (var i = 0; i < rainnum; i++) {
-    rain[i] = {
-      x: Math.random() * w,
-      y: Math.random() * h,
-      l: Math.random() * 1,
-      xs: -4 + Math.random() * 4 + 2,
-      ys: Math.random() * 10 + 10
-    };
-  }
-}
+let stageWidth = 0;
+let stageHeight = 0;
+let previousTimestamp = getTimestamp();
+let previousRender = getTimestamp();
 
-function createLightning() {
-  var x = random(100, w - 100);
-  var y = random(0, h / 4);
+const loop = () => {
+  ctx.clearRect(0, 0, stageWidth, stageHeight);
+  clCtx.clearRect(0, 0, stageWidth, stageHeight);
+  lsCtx.clearRect(0, 0, stageWidth, stageHeight);
 
-  var createCount = random(1, 3);
-  for (var i = 0; i < createCount; i++) {
-    single = {
-      x: x,
-      y: y,
-      xRange: random(5, 30),
-      yRange: random(10, 25),
-      path: [
-        {
-          x: x,
-          y: y
-        }
-      ],
-      pathLimit: random(40, 55)
-    };
-    lightning.push(single);
-  }
-}
+  lightning.forEach((path) => {
+    path.animate();
+    path.render();
+  });
 
-function drawRainTrough(i) {
-  ctx1.beginPath();
-  var grd = ctx1.createLinearGradient(
-    0,
-    RainTrough[i].y,
-    0,
-    RainTrough[i].y + RainTrough[i].length
-  );
-  grd.addColorStop(0, "rgba(255,255,255,0)");
-  grd.addColorStop(1, "rgba(255,255,255," + RainTrough[i].opacity + ")");
-
-  ctx1.fillStyle = grd;
-  ctx1.fillRect(RainTrough[i].x, RainTrough[i].y, 1, RainTrough[i].length);
-  ctx1.fill();
-}
-
-function drawRain(i) {
-  ctx2.beginPath();
-  ctx2.moveTo(rain[i].x, rain[i].y);
-  ctx2.lineTo(
-    rain[i].x + rain[i].l * rain[i].xs,
-    rain[i].y + rain[i].l * rain[i].ys
-  );
-  ctx2.strokeStyle = "rgba(174,194,224,0.5)";
-  ctx2.lineWidth = 1;
-  ctx2.lineCap = "round";
-  ctx2.stroke();
-}
-
-function drawLightning() {
-  for (var i = 0; i < lightning.length; i++) {
-    var light = lightning[i];
-
-    light.path.push({
-      x:
-        light.path[light.path.length - 1].x +
-        (random(0, light.xRange) - light.xRange / 2),
-      y: light.path[light.path.length - 1].y + random(0, light.yRange)
+  if (HAS_CLOUD_EFFECTS) {
+    cloudLightning.forEach((cloud) => {
+      cloud.animate();
+      cloud.render();
     });
 
-    if (light.path.length > light.pathLimit) {
-      lightning.splice(i, 1);
-    }
-
-    ctx3.strokeStyle = "rgba(255, 255, 255, .1)";
-    ctx3.lineWidth = 3;
-    if (random(0, 15) === 0) {
-      ctx3.lineWidth = 6;
-    }
-    if (random(0, 30) === 0) {
-      ctx3.lineWidth = 8;
-    }
-
-    ctx3.beginPath();
-    ctx3.moveTo(light.x, light.y);
-    for (var pc = 0; pc < light.path.length; pc++) {
-      ctx3.lineTo(light.path[pc].x, light.path[pc].y);
-    }
-    if (Math.floor(random(0, 30)) === 1) {
-      //to fos apo piso
-      ctx3.fillStyle = "rgba(255, 255, 255, " + random(1, 3) / 100 + ")";
-      ctx3.fillRect(0, 0, w, h);
-    }
-    ctx3.lineJoin = "miter";
-    ctx3.stroke();
+    lightningSheets.forEach((lightningSheet) => {
+      lightningSheet.animate();
+      lightningSheet.render();
+    });
+  } else {
+    cloudLightning.forEach((cloud) => (cloud.alpha = 0));
+    lightningSheets.forEach((cloud) => (cloud.alpha = 0));
   }
-}
 
-function animateRainTrough() {
-  clearcanvas1();
-  for (var i = 0; i < rainthroughnum; i++) {
-    if (RainTrough[i].y >= h) {
-      RainTrough[i].y = h - RainTrough[i].y - RainTrough[i].length * 5;
+  if (HAS_FLASH) {
+    flashes.forEach((path) => {
+      path.animate();
+      path.render();
+    });
+  }
+
+  // create lightning or lightning sheet
+  if (
+    random() < LIGHTNING_CHANCE &&
+    getTimestamp() - previousTimestamp > TIME_BETWEEN_LIGHTNING
+  ) {
+    if (random() > 0.4) {
+      lightning.push(new Lightning());
     } else {
-      RainTrough[i].y += speedRainTrough;
+      lightningSheets.push(new LightningSheet());
     }
-    drawRainTrough(i);
-  }
-}
 
-function animateRain() {
-  clearcanvas2();
-  for (var i = 0; i < rainnum; i++) {
-    rain[i].x += rain[i].xs;
-    rain[i].y += rain[i].ys;
-    if (rain[i].x > w || rain[i].y > h) {
-      rain[i].x = Math.random() * w;
-      rain[i].y = -20;
+    previousTimestamp = getTimestamp();
+  }
+
+  lightning = lightning.filter((path) => path.alpha > 0);
+  cloudLightning = cloudLightning.filter((cloud) => cloud.alpha > 0);
+  flashes = flashes.filter((sheet) => sheet.alpha > 0);
+  lightningSheets = lightningSheets.filter((sheet) => sheet.alpha > 0);
+
+  requestAnimationFrame(loop);
+};
+
+class Lightning {
+  constructor(ox, oy, width, isBranch = false, branchDirection) {
+    const x = ox || random(stageWidth);
+    const y = oy || 40 + random(100);
+    let newCloud;
+
+    this.paths = [];
+    this.red = 255;
+    this.green = 255;
+    this.blue = 255;
+    this.alpha = 1;
+    this.hasEnded = false;
+    this.width = width || random(MAX_WIDTH) + 1;
+    this.isBranch = isBranch;
+    this.xDeviation = isBranch ? 1.3 : 1;
+    this.branchDirection = branchDirection || (Math.random() - 0.5) * 2;
+    this.flickerCount = 0;
+    this.clouds = [];
+
+    this.paths.push({
+      x,
+      y
+    });
+
+    if (HAS_FLASH) {
+      flashes.push(new Flash(this.width));
     }
-    drawRain(i);
+
+    if (!this.isBranch) {
+      newCloud = new CloudLightning(x, y, this.width);
+      cloudLightning.push(newCloud);
+      this.clouds.push(newCloud);
+    }
+
+    if (this.isBranch) {
+      this.width = 1;
+    }
+  }
+
+  animate() {
+    const newLines = 3 + random(5);
+    const branchChance = this.isBranch ? BRANCH_BRANCH_CHANCE : BRANCH_CHANCE;
+
+    if (!this.hasEnded) {
+      const previousPoint = this.getLastPoint();
+      let lastX = previousPoint.x;
+      let lastY = previousPoint.y;
+      let newX, newY;
+      let xDirection;
+
+      // add new extensions
+      for (let i = 0; i < newLines; i++) {
+        xDirection = this.isBranch
+          ? this.branchDirection
+          : (Math.random() - 0.5) * 2;
+        newX = lastX + xDirection * MAX_X_DISTANCE * this.xDeviation;
+        newY = lastY + random(MAX_Y_DISTANCE) + 2;
+
+        lastX = newX;
+        lastY = newY;
+        this.paths.push({
+          x: newX,
+          y: newY
+        });
+
+        if (this.isBranch && random() < 0.03) {
+          lightning.push(new Lightning(lastX, lastY, this.width, true));
+        }
+      }
+
+      // when to stop extending
+      this.hasEnded =
+        lastY / stageHeight > 0.8 ||
+        (random() > 0.6 && this.paths.length > (MAX_POINTS * 3) / 4) ||
+        this.paths.length > MAX_POINTS ||
+        (this.isBranch && this.paths.length > 5);
+
+      // create branches
+      if (
+        random() > branchChance &&
+        this.paths.length > 5 &&
+        this.paths.length < (MAX_POINTS * 2) / 3
+      ) {
+        lightning.push(new Lightning(lastX, lastY, this.width, true));
+      }
+    }
+
+    // fade out
+    if (this.alpha > 0) {
+      this.alpha -= FADE_INCREMENT;
+
+      // fade out purple
+      if (this.alpha < 0.5) {
+        this.green -= 4.5;
+      }
+
+      if (this.isBranch) {
+        this.alpha -= FADE_INCREMENT / 2;
+      }
+    }
+
+    // cool flicker
+    if (
+      !this.isBranch &&
+      random() < FLICKER_CHANCE &&
+      this.flickerCount < 2 &&
+      this.alpha > 0.3
+    ) {
+      this.alpha = 1;
+      this.green = 240;
+      this.flickerCount++;
+
+      this.clouds.map((cloud) => {
+        cloud.alpha = random(0.6) + 0.3;
+      });
+    }
+
+    if ((this.isBranch && this.flickerCount > 0) || this.alpha < 0) {
+      this.alpha = 0;
+    }
+  }
+
+  render() {
+    const colour = this.getColour();
+
+    ctx.beginPath();
+    ctx.strokeStyle = colour;
+    ctx.lineWidth = this.width;
+
+    //if (this.flickerCount === 0) {
+    //  ctx.shadowBlur = this.width * 3;
+    //  ctx.shadowColor = colour;
+    //}
+
+    this.paths.forEach((path) => {
+      ctx.lineTo(path.x, path.y);
+    });
+
+    ctx.stroke();
+  }
+
+  getColour(red, green, blue, alpha) {
+    return `rgba(${red || this.red}, ${green || this.green}, ${
+      blue || this.blue
+    }, ${alpha || this.alpha})`;
+  }
+
+  getLastPoint() {
+    if (this.paths.length > 0) {
+      const lastPoint = this.paths[this.paths.length - 1];
+
+      return {
+        x: lastPoint.x,
+        y: lastPoint.y
+      };
+    } else {
+      return { x: 0, y: 0 };
+    }
   }
 }
 
-function animateLightning() {
-  clearCanvas3();
-  lightTimeCurrent++;
-  if (lightTimeCurrent >= lightTimeTotal) {
-    createLightning();
-    lightTimeCurrent = 0;
-    lightTimeTotal = 200; //rand(100, 200)
+class Flash {
+  constructor(flash = 1) {
+    this.alpha = 0.09 * flash;
   }
-  drawLightning();
+
+  animate() {
+    this.alpha -= FADE_INCREMENT * 2;
+  }
+
+  render() {
+    ctx.beginPath();
+    ctx.fillStyle = `rgba(50, 48, 51, ${this.alpha})`;
+    ctx.fillRect(0, 0, stageWidth, stageHeight);
+  }
 }
 
-function init() {
-  createRainTrough();
-  createRain();
-  window.addEventListener("resize", createRainTrough);
-}
-init();
+class LightningSheet {
+  constructor(x, y, isRoot = true) {
+    this.alpha = random(0.6) + 0.2;
+    this.x = x || random(stageWidth);
+    this.y = y || random(stageHeight * 0.6) - 100;
+    this.size = random(50) + 40;
 
-function animloop() {
-  animateRainTrough();
-  animateRain();
-  animateLightning();
-  requestAnimationFrame(animloop);
+    // size proportionately to the horizon to create perspective
+    this.size = (1 - (this.y / stageHeight) * 0.6) * this.size;
+
+    if (isRoot) {
+      let sheetX, sheetY;
+
+      for (let i = 0; i < random(12) + 4; i++) {
+        sheetX = this.x + random(300, true);
+        sheetY = this.y + random(80, true);
+        lightningSheets.push(new LightningSheet(sheetX, sheetY, false));
+      }
+    }
+  }
+
+  animate() {
+    this.alpha -= FADE_INCREMENT * 0.8;
+
+    if (this.alpha < 0.3 && random() < 0.025) {
+      this.alpha += random(0.4);
+    }
+  }
+
+  render() {
+    lsCtx.save();
+
+    lsCtx.scale(2, 1);
+
+    lsCtx.beginPath();
+    lsCtx.arc(this.x / 2, this.y, this.size, 2 * Math.PI, false);
+    lsCtx.closePath();
+    lsCtx.restore();
+
+    lsCtx.filter = `blur(${this.size}px)`;
+    lsCtx.fillStyle = `rgba(100, 100, 100, ${this.alpha})`;
+    lsCtx.fill();
+    lsCtx.shadowColor = "#999999";
+    lsCtx.shadowBlur = this.size;
+  }
 }
-animloop();
+
+class CloudLightning {
+  constructor(x, y, size) {
+    this.x = x;
+    this.y = y;
+    this.size = size * 3 * random(2) + 10;
+    this.alpha = 1;
+  }
+
+  animate() {
+    this.alpha -= FADE_INCREMENT;
+  }
+
+  render() {
+    clCtx.save();
+
+    clCtx.scale(2.5, 1);
+
+    clCtx.beginPath();
+    clCtx.arc(this.x / 2.5, this.y, this.size, 2 * Math.PI, false);
+    clCtx.restore();
+
+    clCtx.filter = `blur(${this.size}px)`;
+    clCtx.fillStyle = `rgba(255, 255, 255, ${this.alpha})`;
+    clCtx.fill();
+    clCtx.shadowColor = "#eeeeff";
+    clCtx.shadowBlur = this.size * 8 + 50;
+  }
+}
+
+//=============================
+// Setup
+//=============================
+
+const updateCanvasSize = () => {
+  stageWidth = window.innerWidth;
+  stageHeight = window.innerHeight;
+
+  lightningCanvas.width = stageWidth;
+  lightningCanvas.height = stageHeight;
+
+  cloudLightningCanvas.width = stageWidth;
+  cloudLightningCanvas.height = stageHeight;
+
+  lightningSheetCanvas.width = stageWidth;
+  lightningSheetCanvas.height = stageHeight * 0.8;
+};
+
+$(window).on("mousedown", (e) => {
+  lightning.push(new Lightning(e.clientX, e.clientY));
+});
+
+updateCanvasSize();
+$(window).resize(updateCanvasSize);
+
+// create forest
+const $tree = $(".tree");
+for (let i = 0; i < 150; i++) {
+  $tree
+    .clone()
+    .appendTo("body")
+    .css({
+      top: `${random(40) + 30}%`,
+      left: random(stageWidth * 0.7, true),
+      transform: `scale(${random(0.5) + 0.5}) scaleX(${
+        random() > 0.5 ? -1 : 1
+      })`,
+      display: "inline"
+    });
+}
+
+// watch toggle
+$("#cloudInput").on("click", function () {
+  HAS_CLOUD_EFFECTS = $(this).is(":checked");
+});
+
+setTimeout(() => {
+  $(".toggles").fadeIn();
+}, 6000);
+
+//=============================
+// Run it!
+//=============================
+
+lightning.push(new Lightning(400, 100));
+loop();

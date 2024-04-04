@@ -1,113 +1,82 @@
-@mixin size($size) {
-    width: $size;
-    height: $size;
-  }
-  
-  @mixin abs-pos {
-    display: block;
-    position: absolute;
-    top: 0;
-    left: 0;
-  }
-  
-  html {
-    box-sizing: border-box;
-  }
-  #helloWorld {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    color: white;
-  }
-  
-  *,
-  *:before,
-  *:after {
-    box-sizing: inherit;
-    margin: 0;
-    padding: 0;
-  }
-  
-  html,
-  body,
-  canvas {
-    @include size(100%);
-  }
-  
-  body {
-    @include size(100%);
-    background-color: #222;
-    background-image: url('https://drive.google.com/uc?export=view&id=0BzFF7FmbJUo5X0NEUXFVd0NBcWc');
-    background-size: cover;
-    background-position: 0 0;
-    background-repeat: no-repeat;
-    position: relative;
-    z-index: 0;
-    &:after {
-      content: '';
-      @include size(100%);
-      @include abs-pos;
-      background-color: rgba(0, 0, 0, 0.1);
-      z-index: 1;
-      animation: thunder-bg 6s infinite;
-    }
-  }
-  
-  canvas {
-    @include abs-pos;
-  }
-  
-  #canvas3 {
-    z-index: 5;
-  }
-  
-  #canvas2 {
-    z-index: 10;
-  }
-  
-  #canvas1 {
-    z-index: 100;
-  }
-  
-  $color1: rgba(34,
-  34,
-  34,
-  .9);
-  $color2: rgba(59,
-  59,
-  59,
-  .3);
-  .thunder {
-    @at-root {
-      @-webkit-keyframes thunder-bg {
-        0% {
-          background-color: $color1;
-        }
-        9% {
-          background-color: $color1;
-        }
-        10% {
-          background-color: $color2;
-        }
-        10.5% {
-          background-color: $color1;
-        }
-        80% {
-          background-color: $color1;
-        }
-        82% {
-          background-color: $color2;
-        }
-        83% {
-          background-color: $color1;
-        }
-        83.5% {
-          background-color: $color2;
-        }
-        100% {
-          background-color: $color1;
-        }
-      }
-    }
-  }
+/* Ensure the body (or a main wrapper div) acts as a flex container */
+body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 50vh; /* Full viewport height */
+  margin: 0;
+  position: relative; /* Ensures positioning is relative to the body */
+  z-index: 1; /* Lower than the canvas to keep it in the background */
+  overflow: hidden;
+}
+
+/* Specific styles for the "Mystery Content" section */
+.section {
+  z-index: 200; /* Ensures it's above the canvas layers */
+  /* No need for position fixed or transform */
+}
+
+canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 10; /* Keeps canvas in the background */
+}
+
+.land {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  height: 20%;
+  background-color: #000000;
+  z-index: 50;
+}
+
+.forest {
+}
+
+.tree {
+  position: absolute;
+  z-index: 50;
+}
+
+.toggles {
+  position: absolute;
+  z-index: 100;
+  left: 20px;
+  bottom: 20px;
+  color: #aaaaaa;
+  display: none;
+}
+/* General styling for sections */
+.section {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin-top: -50px;
+}
+
+/* Styling for the content within the section */
+.section div {
+  font-size: 24px;
+  color: #ffffff; /* Adjust the color as needed */
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+/* Styling for the next button */
+.nextButton {
+  padding: 10px 20px;
+  background-color: #007bff; /* Adjust the color as needed */
+  color: #fff;
+  font-size: 18px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.nextButton:hover {
+  background-color: #0056b3; /* Adjust the color as needed */
+}

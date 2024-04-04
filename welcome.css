@@ -28,7 +28,7 @@ html {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  /* margin-top: 50%; */
+  margin-top: 200px;
 }
 /* Styling for the welcome content */
 #welcomeSection div {
