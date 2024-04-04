@@ -46,6 +46,7 @@ body {
     animation: thunder-bg 6s infinite;
   }
 }
+/*  */
 
 canvas {
   @include abs-pos;

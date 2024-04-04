@@ -1,0 +1,22 @@
+#mysterySection {
+  position: relative; /* Ensure proper positioning */
+}
+
+#lightningAnimationContainer {
+  position: absolute; /* Position the lightning animation container */
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1; /* Set a lower z-index to keep it behind the content */
+}
+
+.mystery-content {
+  position: relative;
+  z-index: 1000; /* Adjust z-index as needed */
+}
+
+.nextButton {
+  position: relative;
+  z-index: 1000; /* Adjust z-index as needed */
+}

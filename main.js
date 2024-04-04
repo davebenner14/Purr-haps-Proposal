@@ -1,17 +1,8 @@
 $(document).ready(function () {
   // Handler for the initial "Click to Enter" action
   $("#enterButton").click(function () {
-    // Attempt to play the background music
-    let audio = document.getElementById("entryMusic");
-    if (audio.paused) {
-      audio.play();
-      console.log("Background music started.");
-    }
-
-    // Fade out the container with the "Click to Enter" button and then reveal the welcome section
-    $(".buttons").fadeOut(1000, function () {
-      $("#welcomeSection").fadeIn(1000);
-    });
+    // Redirect to the welcome.html page
+    window.location.href = "welcome.html";
   });
 
   // Handler for all "Next" buttons within sections
@@ -33,11 +24,15 @@ $(document).ready(function () {
       console.log("Stopping lightning animation.");
     }
 
-    // Fade out the current section, then fade in the next one
     currentSection.fadeOut(1000, function () {
       if (nextSection.length !== 0) {
         // If there's a next section to show, fade it in
-        nextSection.fadeIn(1000);
+        nextSection.fadeIn(1000, function () {
+          // Ensure the "Mystery" section content and next button are ready to be shown
+          if (nextSection.attr("id") === "mysterySection") {
+            nextSection.find("div, .nextButton").fadeIn(1000);
+          }
+        });
       } else {
         console.log("No more sections to display."); // Optionally handle the end of sections
       }
