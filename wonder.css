@@ -1,0 +1,45 @@
+/* Ensure the entire body is styled to use the full viewport and flexbox for centering */
+html,
+body {
+  height: 100%;
+  margin: 0;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start; /* Align items from the top */
+}
+
+/* Adjust the .section class to ensure it's properly centered and has the right spacing from the top */
+.section {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin-top: 200px; /* Ensure 200px from the top */
+  width: 100%; /* Take up 100% width of its container to center content */
+}
+
+/* Add to your existing button and div styles as needed */
+
+/* Styling for the welcome content */
+#welcomeSection div {
+  font-size: 24px;
+  color: #ffffff; /* Adjust the color as needed */
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+/* Styling for the next button */
+.nextButton {
+  padding: 10px 20px;
+  background-color: #007bff; /* Adjust the color as needed */
+  color: #fff;
+  font-size: 18px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.nextButton:hover {
+  background-color: #0056b3; /* Adjust the color as needed */
+}
