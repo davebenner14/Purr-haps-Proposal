@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Tavern - Purr-haps Apparel</title>
+    <link rel="stylesheet" href="tavern.css" />
+  </head>
+  <body>
+    <div class="logo-container">
+      <img
+        src="Assets/logo.jpg"
+        alt="Purr-haps Apparel Logo"
+        class="centered-logo"
+      />
+    </div>
+    <button id="armoury" class="corner-button top-left">Armoury</button>
+    <button id="quests" class="corner-button top-right">Quests</button>
+    <button id="alchemy" class="corner-button bottom-left">Alchemy</button>
+    <button id="guild" class="corner-button bottom-right">Guild</button>
+
+    <!-- Description Modal -->
+    <div id="descriptionModal" class="modal">
+      <div class="modal-content">
+        <span class="close-button">&times;</span>
+        <h2 id="modalTitle">Title</h2>
+        <p id="modalDescription">Description</p>
+      </div>
+    </div>
+
+    <button id="musicToggle" class="music-toggle">Play Tavern Music</button>
+
+    <audio id="tavernMusic" autoplay loop>
+      <source src="Assets/Tavern.mp3" type="audio/mp3" />
+    </audio>
+
+    <script src="tavern.js"></script>
+  </body>
+</html>
