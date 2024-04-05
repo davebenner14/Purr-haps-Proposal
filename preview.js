@@ -27,11 +27,11 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   function changeImage() {
-    currentImageIndex = (currentImageIndex + 1) % images.length; // Increment the index
-    updateContent(); // Update the image and text based on the new index
+    currentImageIndex = (currentImageIndex + 1) % images.length;
+    updateContent();
   }
 
-  updateContent(); // Set the first image and text
+  updateContent();
 
   document
     .getElementById("exploreButton")
@@ -40,6 +40,6 @@ document.addEventListener("DOMContentLoaded", function () {
   document
     .getElementById("enterTavernButton")
     .addEventListener("click", function () {
-      window.location.href = "tavern.html"; // Navigate to tavern.html
+      window.location.href = "tavern.html";
     });
 });

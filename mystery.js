@@ -236,11 +236,6 @@ class Lightning {
     ctx.strokeStyle = colour;
     ctx.lineWidth = this.width;
 
-    //if (this.flickerCount === 0) {
-    //  ctx.shadowBlur = this.width * 3;
-    //  ctx.shadowColor = colour;
-    //}
-
     this.paths.forEach((path) => {
       ctx.lineTo(path.x, path.y);
     });
@@ -360,10 +355,6 @@ class CloudLightning {
   }
 }
 
-//=============================
-// Setup
-//=============================
-
 const updateCanvasSize = () => {
   stageWidth = window.innerWidth;
   stageHeight = window.innerHeight;
@@ -409,10 +400,6 @@ $("#cloudInput").on("click", function () {
 setTimeout(() => {
   $(".toggles").fadeIn();
 }, 6000);
-
-//=============================
-// Run it!
-//=============================
 
 lightning.push(new Lightning(400, 100));
 loop();

@@ -1,0 +1,24 @@
+{
+  "name": "purr-haps-proposal",
+  "version": "1.0.0",
+  "description": "",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "sass eclipse.scss:eclipse.css" 
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/davebenner14/Purr-haps-Proposal.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/davebenner14/Purr-haps-Proposal/issues"
+  },
+  "homepage": "https://github.com/davebenner14/Purr-haps-Proposal#readme",
+  "devDependencies": {
+    "sass": "^1.74.1"
+  }
+}

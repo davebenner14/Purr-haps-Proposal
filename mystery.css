@@ -1,26 +1,23 @@
-/* Ensure the body (or a main wrapper div) acts as a flex container */
 body {
   display: flex;
   justify-content: center;
   align-items: center;
-  min-height: 50vh; /* Full viewport height */
+  min-height: 50vh;
   margin: 0;
-  position: relative; /* Ensures positioning is relative to the body */
-  z-index: 1; /* Lower than the canvas to keep it in the background */
+  position: relative;
+  z-index: 1;
   overflow: hidden;
 }
 
-/* Specific styles for the "Mystery Content" section */
 .section {
-  z-index: 200; /* Ensures it's above the canvas layers */
-  /* No need for position fixed or transform */
+  z-index: 200;
 }
 
 canvas {
   position: absolute;
   top: 0;
   left: 0;
-  z-index: 10; /* Keeps canvas in the background */
+  z-index: 10;
 }
 
 .land {
@@ -48,7 +45,7 @@ canvas {
   color: #aaaaaa;
   display: none;
 }
-/* General styling for sections */
+
 .section {
   display: flex;
   flex-direction: column;
@@ -57,18 +54,16 @@ canvas {
   margin-top: -150px;
 }
 
-/* Styling for the content within the section */
 .section div {
   font-size: 24px;
-  color: #ffffff; /* Adjust the color as needed */
+  color: #ffffff;
   text-align: center;
   margin-bottom: 20px;
 }
 
-/* Styling for the next button */
 .nextButton {
   padding: 10px 20px;
-  background-color: #007bff; /* Adjust the color as needed */
+  background-color: #007bff;
   color: #fff;
   font-size: 18px;
   border: none;
@@ -78,5 +73,5 @@ canvas {
 }
 
 .nextButton:hover {
-  background-color: #0056b3; /* Adjust the color as needed */
+  background-color: #0056b3;
 }

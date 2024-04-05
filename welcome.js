@@ -28,7 +28,6 @@ for (var i = 0; i < FIREFLIES; i++) {
       x: fx,
       y: fy,
       duration: random(5, 15),
-      // ease: "slow (0.7, 0.7, false)",
       ease: "rough ({template: none.out, strength: 1, points: 20, taper: 'none', randomize: true, clamp:false})",
       repeat: -1,
       yoyo: true

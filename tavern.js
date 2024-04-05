@@ -38,13 +38,13 @@ document.addEventListener("DOMContentLoaded", () => {
     modal.style.display = "none";
   });
 
-  // Close the modal if the user clicks anywhere outside of it
   window.onclick = function (event) {
     if (event.target === modal) {
       modal.style.display = "none";
     }
   };
 });
+
 document.addEventListener("DOMContentLoaded", function () {
   const music = document.getElementById("tavernMusic");
   const musicToggle = document.getElementById("musicToggle");
@@ -52,10 +52,14 @@ document.addEventListener("DOMContentLoaded", function () {
   musicToggle.addEventListener("click", function () {
     if (music.paused) {
       music.play();
-      musicToggle.textContent = "Mute Music"; // Change the button text to "Mute Music" when playing
+      musicToggle.textContent = "Mute Music";
     } else {
       music.pause();
-      musicToggle.textContent = "Play Music"; // Change it back to "Play Music" when paused
+      musicToggle.textContent = "Play Music";
     }
   });
+});
+
+document.getElementById("replayIntro").addEventListener("click", function () {
+  window.location.href = "index.html";
 });
